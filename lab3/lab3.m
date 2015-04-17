@@ -17,7 +17,7 @@ if (runTraining)
 end
 
 
-img = imread('bw.jpg'); % good, training data is not that racist! 
+img = imread('bw.jpg'); % good, training data is not too racist! 
 bim = SkinClassifier(img, 1);
 %imagesc(bim);
 montage({img, bim}, 'Size', [1 2]);
