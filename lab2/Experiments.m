@@ -1,4 +1,4 @@
-run('../VLFeat/vlfeat-0.9.20/toolbox/vl_setup.m')
+run('../vlfeat-0.9.20/toolbox/vl_setup.m')
 clear;
 addpath('./Pics/Aligned_Pics');
 addpath('./Pics/Misaligned_Pics');
