@@ -29,7 +29,7 @@ if (0)
 end
 
 % debug 2
-if (1)
+if (0)
     dinfo2 = load('resources/DebugInfo/debuginfo2.mat');
     fs = dinfo2.fs; W=19; H=19;
     abs(fs(1) - VecFeature(dinfo2.ftypes(1, :), W, H)* ii_im(:)) < eps
@@ -38,6 +38,63 @@ if (1)
     abs(fs(4) - VecFeature(dinfo2.ftypes(4, :), W, H)* ii_im(:)) < eps
 end
 
-imagesc(ii_im)
-colormap('gray')
+% debug 3
+if (0)
+    W = 19;
+    H = 19;
+    all_ftypes = EnumAllFeatures(W, H);
+    fmat = VecAllFeatures(all_ftypes, W, H);
+    
+    dinfo3 = load('resources/DebugInfo/debuginfo3.mat');
+    fmat = VecAllFeatures(dinfo3.all_ftypes, W, H);
+    sum(abs(dinfo3.fs - fmat * ii_im(:)) < eps)
+end
 
+if (0)
+    dinfo4 = load('resources/DebugInfo/debuginfo4.mat');
+    ni = 100;
+    ii_ims = LoadImDataDir('resources/TrainingImages/FACES', ni);
+    fmat = VecAllFeatures(dinfo4.all_ftypes, 19, 19);
+    sum(sum(abs(dinfo4.fs - fmat * ii_ims)) < eps)
+end
+
+if (0)
+    dinfo5 = load('resources/DebugInfo/debuginfo5.mat');
+    train_inds = dinfo5.train_inds;
+    all_ftypes = dinfo5.all_ftypes;
+    SaveTrainingData(all_ftypes, train_inds, 'training_data.mat');
+end
+
+if (0)
+    Tdata = load('training_data.mat');
+    fs = Tdata.fmat(12028, :) * Tdata.ii_ims;
+    ws = ones(1, size(Tdata.ii_ims, 2)) / size(Tdata.ii_ims, 2);
+    [theta, p, err] = LearnWeakClassifier(ws, fs, Tdata.ys)
+    faces = fs(Tdata.ys == 1);
+    nonfaces = fs(Tdata.ys == -1);
+    
+%     [face_counts, facecenters] = hist(faces, 10);
+%     [nonface_counts, nonfacecenters] = hist(nonfaces, 10);
+%     plot(facecenters, face_counts, 'ro-');
+%     hold on;
+%     plot(nonfacecenters, nonface_counts, 'bo-');
+    
+end
+
+if (0)
+    fpic = MakeFeaturePic([4, 5, 5, 5, 5], 19, 19);
+    imagesc(fpic);
+    colormap('gray');
+end
+
+if (0)
+    Tdata = load('training_data.mat');
+    cpic = MakeClassifierPic(Tdata.all_ftypes, [5192, 12765], [1.8725, 1.467], [1 -1], 19, 19);
+    imagesc(cpic);
+    colormap('gray');
+end
+
+if (1)
+    Tdata = load('training_data.mat');
+    Cparams = BoostingAlg(Tdata, 3);
+end
