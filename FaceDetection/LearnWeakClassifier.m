@@ -14,6 +14,5 @@ function [theta, p, err] = LearnWeakClassifier(ws, fs, ys)
         p = 1;
         err = eps_pos;
     end
-    
 end
 

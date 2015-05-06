@@ -31,6 +31,5 @@ function [fpic] = MakeFeaturePic(ftype, W, H)
         otherwise
             error('undefined feature type');
     end
-
 end
 
