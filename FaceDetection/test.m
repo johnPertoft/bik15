@@ -95,24 +95,31 @@ if (0)
     colormap('gray');
 end
 
-if (1)
+if (0)
     Tdata = load('training_data.mat');
-    Cparams = BoostingAlg(Tdata, 3)
+    Cparams = BoostingAlg(Tdata, 10)
     
     idxs = Cparams.theta(:, 1); 
     W = Tdata.W;
     H = Tdata.H;
-    fpic1 = MakeFeaturePic(Cparams.all_ftypes(idxs(3), :), W, H);
+    %fpic1 = MakeFeaturePic(Cparams.all_ftypes(idxs(3), :), W, H);
     %imagesc(fpic1);
-    %colormap('gray');
+    colormap('gray');
     
     cpic = MakeClassifierPic(Cparams.all_ftypes, Cparams.theta(:, 1)', Cparams.alphas, Cparams.theta(:, 3)', W, H);
-    %imagesc(cpic);
+    imagesc(cpic);
     
-dinfo6 = load('resources/DebugInfo/debuginfo6.mat');
-T = dinfo6.T;
-Cparams = BoostingAlg(Tdata, T);
-sum(abs(dinfo6.alphas - Cparams.alphas') > eps)
-sum(abs(dinfo6.Thetas(:) - Cparams.theta(:)) > eps)
+% dinfo6 = load('resources/DebugInfo/debuginfo6.mat');
+% T = dinfo6.T;
+% Cparams = BoostingAlg(Tdata, T);
+% sum(abs(dinfo6.alphas - Cparams.alphas') > eps)
+% sum(abs(dinfo6.Thetas(:) - Cparams.theta(:)) > eps)
+end
 
+if (0)
+    dinfo7 = load('resources/DebugInfo/debuginfo7.mat');
+    Tdata = load('training_data.mat');
+    Cparams = BoostingAlg(Tdata, dinfo7.T);
+    scs = ApplyDetector(Cparams, Tdata.ii_ims);
+    scs(1)    
 end

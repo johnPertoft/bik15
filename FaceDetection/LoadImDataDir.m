@@ -9,7 +9,7 @@ end
 ii_ims = [];
 for i=1:nfiles
     currentfilename = [dirname, '/', imagefiles(i).name];
-    [nim, ii_im] = LoadImage(currentfilename);
+    [~, ii_im] = LoadImage(currentfilename);
     ii_ims = [ii_ims, ii_im(:)];
 end
 

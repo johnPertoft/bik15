@@ -8,6 +8,7 @@ function Cparams = BoostingAlg(Tdata, T)
     Cparams.fmat = Tdata.fmat;
     Cparams.all_ftypes = Tdata.all_ftypes;
     Cparams.alphas = zeros(1, T);
+    Cparams.T = T;
 
     % initalise weights
     ws = 1/(2*m) * (Tdata.ys == -1) + 1/(2*(n-m)) * (Tdata.ys == 1);
@@ -15,9 +16,8 @@ function Cparams = BoostingAlg(Tdata, T)
     for t=1:T
         ws = ws ./ sum(ws);
         
-        % change to run more features
-        sz = 1000; %size(FX, 1);
-        weakclassifiers = zeros(sz, 3);
+        numFeatures = size(FX, 1);
+        weakclassifiers = zeros(numFeatures, 3);
         for j=1:size(weakclassifiers, 1)
             [theta, p, err] = LearnWeakClassifier(ws, FX(j, :), Tdata.ys);
             weakclassifiers(j, :) = [theta, p, err];
