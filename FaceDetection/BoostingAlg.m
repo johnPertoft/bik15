@@ -1,9 +1,13 @@
 function Cparams = BoostingAlg(Tdata, T)
-    FX = Tdata.fmat * Tdata.ii_ims;
-    m = sum(Tdata.ys == -1);
-    n = size(Tdata.ys, 2);
+    % train using only a subset of the integral images
+    ii_ims = Tdata.ii_ims(:, Tdata.train_inds);
+    ys = Tdata.ys(:, Tdata.train_inds);
     
-    %Cparams = struct;
+    % feature responses for each feature and each image
+    FX = Tdata.fmat * ii_ims;
+    m = sum(ys == -1);
+    n = size(ys, 2);
+ 
     Cparams.theta = zeros(T, 3);
     Cparams.fmat = Tdata.fmat;
     Cparams.all_ftypes = Tdata.all_ftypes;
@@ -11,7 +15,7 @@ function Cparams = BoostingAlg(Tdata, T)
     Cparams.T = T;
 
     % initalise weights
-    ws = 1/(2*m) * (Tdata.ys == -1) + 1/(2*(n-m)) * (Tdata.ys == 1);
+    ws = 1/(2*m) * (ys == -1) + 1/(2*(n-m)) * (ys == 1);
 
     for t=1:T
         ws = ws ./ sum(ws);
@@ -19,7 +23,7 @@ function Cparams = BoostingAlg(Tdata, T)
         numFeatures = size(FX, 1);
         weakclassifiers = zeros(numFeatures, 3);
         for j=1:size(weakclassifiers, 1)
-            [theta, p, err] = LearnWeakClassifier(ws, FX(j, :), Tdata.ys);
+            [theta, p, err] = LearnWeakClassifier(ws, FX(j, :), ys);
             weakclassifiers(j, :) = [theta, p, err];
         end
         
@@ -31,7 +35,7 @@ function Cparams = BoostingAlg(Tdata, T)
         alpha = 0.5 * log((1 - err) / err);
         
         % update weights 
-        ws = ws .* exp(-alpha * Tdata.ys .* ((parity * FX(minidx, :) < parity * theta) * 2 - 1));        
+        ws = ws .* exp(-alpha * ys .* ((parity * FX(minidx, :) < parity * theta) * 2 - 1));        
         
         Cparams.theta(t, :) = [minidx, theta, parity];
         Cparams.alphas(t) = alpha;

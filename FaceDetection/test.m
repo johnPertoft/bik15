@@ -121,5 +121,33 @@ if (0)
     Tdata = load('training_data.mat');
     Cparams = BoostingAlg(Tdata, dinfo7.T);
     scs = ApplyDetector(Cparams, Tdata.ii_ims);
-    scs(1)    
+    scs(1) % test score for face0001.bmp
+    
+    % plot histogram of face and nonface scores
+    numF = sum(Tdata.ys == 1);
+    numNF = sum(Tdata.ys == -1);
+    face_scores = scs(1:numF);
+    nonface_scores = scs(numF+1:end);
+    [fc, fcenters] = hist(face_scores, 100);
+    [nfc, nfcenters] = hist(nonface_scores, 100);
+    plot(fcenters, fc, 'ro-');
+    hold on;
+    plot(nfcenters, nfc, 'bo-');
+    plot(-1.55, 0:1200, 'g-');
+    plot(1.75, 0:1200, 'g-');
+    
+    numfaces = size(face_scores, 2);
+    classifiedFacesOverAllFacesThMinus155 = sum((fcenters > -1.55) .* fc)
+    classifiedFacesOverAllFacesTh175 = sum((fcenters > 1.75) .* fc)
+    facesClassifiedAsNonface = sum((fcenters < 1.75) .* fc)
+    
+    
+end
+
+if (1)
+    %Tdata = load('training_data.mat');
+    %Cparams = BoostingAlg(Tdata, 10);
+    Cparams = CparamsCopy;
+    Cparams.thresh = ComputeROC(Cparams, Tdata);
+    Cparams.thresh
 end
