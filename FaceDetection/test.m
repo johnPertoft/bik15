@@ -145,16 +145,16 @@ if (0)
 end
 
 if (1)
-    %Tdata = load('training_data.mat');
-    %Cparams = BoostingAlg(Tdata, 10);
-    %Cparams.thresh = ComputeROC(Cparams, Tdata);
+%     Tdata = load('training_data.mat');
+%     Cparams = BoostingAlg(Tdata, 10);
+%     Cparams.thresh = ComputeROC(Cparams, Tdata);
     tic
     im = imread('resources/TestImages/one_chris.png');
     [dets, scs] = ScanImageFixedSize(Cparams, im);
     dets = PruneDetections(dets);    
     
     im = insertShape(im, 'Rectangle', dets, 'Color', 'red');
-    im = insertText(im, bsxfun(@plus, dets(:, [1, 2]), [19, 0]), scs, 'FontSize', 10, 'BoxOpacity', 0.0, 'TextColor', 'green');
+    %im = insertText(im, bsxfun(@plus, dets(:, [1, 2]), [19, 0]), scs, 'FontSize', 10, 'BoxOpacity', 0.0, 'TextColor', 'green');
     imshow(im);
     toc
 
