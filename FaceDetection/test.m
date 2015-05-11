@@ -66,6 +66,7 @@ if (0)
     SaveTrainingData(all_ftypes, train_inds, 'training_data.mat');
 end
 
+% checkpoint 2
 if (0)
     Tdata = load('training_data.mat');
     fs = Tdata.fmat(12028, :) * Tdata.ii_ims;
@@ -74,11 +75,12 @@ if (0)
     faces = fs(Tdata.ys == 1);
     nonfaces = fs(Tdata.ys == -1);
     
-%     [face_counts, facecenters] = hist(faces, 10);
-%     [nonface_counts, nonfacecenters] = hist(nonfaces, 10);
-%     plot(facecenters, face_counts, 'ro-');
-%     hold on;
-%     plot(nonfacecenters, nonface_counts, 'bo-');
+    [face_counts, facecenters] = hist(faces, 10);
+    [nonface_counts, nonfacecenters] = hist(nonfaces, 10);
+    plot(facecenters, face_counts / sum(face_counts), 'ro-');
+    hold on;
+    plot(nonfacecenters, nonface_counts / sum(nonface_counts), 'bo-');
+    hold off;
     
 end
 
@@ -88,6 +90,7 @@ if (0)
     colormap('gray');
 end
 
+
 if (0)
     Tdata = load('training_data.mat');
     cpic = MakeClassifierPic(Tdata.all_ftypes, [5192, 12765], [1.8725, 1.467], [1 -1], 19, 19);
@@ -95,19 +98,20 @@ if (0)
     colormap('gray');
 end
 
+% checkpoint 2
 if (0)
     Tdata = load('training_data.mat');
-    Cparams = BoostingAlg(Tdata, 10)
+    %Cparams = BoostingAlg(Tdata, 10)
     
     idxs = Cparams.theta(:, 1); 
     W = Tdata.W;
     H = Tdata.H;
-    %fpic1 = MakeFeaturePic(Cparams.all_ftypes(idxs(3), :), W, H);
-    %imagesc(fpic1);
+    fpic1 = MakeFeaturePic(Cparams.all_ftypes(idxs(3), :), W, H);
+    imagesc(fpic1);
     colormap('gray');
     
-    cpic = MakeClassifierPic(Cparams.all_ftypes, Cparams.theta(:, 1)', Cparams.alphas, Cparams.theta(:, 3)', W, H);
-    imagesc(cpic);
+    %cpic = MakeClassifierPic(Cparams.all_ftypes, Cparams.theta(:, 1)', Cparams.alphas, Cparams.theta(:, 3)', W, H);
+    %imagesc(cpic);
     
 % dinfo6 = load('resources/DebugInfo/debuginfo6.mat');
 % T = dinfo6.T;
@@ -116,47 +120,43 @@ if (0)
 % sum(abs(dinfo6.Thetas(:) - Cparams.theta(:)) > eps)
 end
 
-if (0)
+% checkpoint 3
+if (1)
     dinfo7 = load('resources/DebugInfo/debuginfo7.mat');
     Tdata = load('training_data.mat');
-    Cparams = BoostingAlg(Tdata, dinfo7.T);
+    %Cparams = BoostingAlg(Tdata, dinfo7.T);
+    Cparams = load('classifier.mat');
     scs = ApplyDetector(Cparams, Tdata.ii_ims);
-    scs(1) % test score for face0001.bmp
+    scoreforface0001 = scs(1) % test score for face0001.bmp
     
     % plot histogram of face and nonface scores
-    numF = sum(Tdata.ys == 1);
-    numNF = sum(Tdata.ys == -1);
-    face_scores = scs(1:numF);
-    nonface_scores = scs(numF+1:end);
-    [fc, fcenters] = hist(face_scores, 100);
-    [nfc, nfcenters] = hist(nonface_scores, 100);
-    plot(fcenters, fc, 'ro-');
-    hold on;
-    plot(nfcenters, nfc, 'bo-');
-    plot(-1.55, 0:1200, 'g-');
-    plot(1.75, 0:1200, 'g-');
-    
-    numfaces = size(face_scores, 2);
-    classifiedFacesOverAllFacesThMinus155 = sum((fcenters > -1.55) .* fc)
-    classifiedFacesOverAllFacesTh175 = sum((fcenters > 1.75) .* fc)
-    facesClassifiedAsNonface = sum((fcenters < 1.75) .* fc)
-    
+%     numF = sum(Tdata.ys == 1);
+%     numNF = sum(Tdata.ys == -1);
+%     face_scores = scs(1:numF);
+%     nonface_scores = scs(numF+1:end);
+%     [fc, fcenters] = hist(face_scores, 100);
+%     [nfc, nfcenters] = hist(nonface_scores, 100);
+%     plot(fcenters, fc, 'ro-');
+%     hold on;
+%     plot(nfcenters, nfc, 'bo-');
+%     plot(-1.55, 0:1200, 'g-');
+%     plot(1.75, 0:1200, 'g-');
+
+    thresh = ComputeROC(Cparams, Tdata)
     
 end
 
-if (1)
+if (0)
+    %SaveClassifier(100);
+    Cparams = load('classifier.mat');
     
-
-    Tdata = load('training_data.mat');
-    Cparams = BoostingAlg(Tdata, 10);
-    Cparams.thresh = ComputeROC(Cparams, Tdata);
     tic
-    im = imread('resources/TestImages/big_one_chris.png');
-    %im = imresize(im, [500, 500]);
+    im = imread('resources/TestImages/gerobe.jpg');
+    %im = imresize(im, 0.5);
     %[dets, scs] = ScanImageFixedSize(Cparams, im);
-    %dets = PruneDetecti ons(dets);  % fix prune detections for different scales  
-    dets = ScanImageOverScale(Cparams, im, 0.02, 0.4, 0.05);
-    %Cparams.thresh = 2;
+    dets = ScanImageOverScale(Cparams, im, 0.02, 0.8, 0.05);
+    %dets = ScanImageOverScale(Cparams, im, 0.7, 0.8, 0.01);
+    dets = PruneDetections(dets);
     
     im = insertShape(im, 'Rectangle', dets, 'Color', 'red');
     %im = insertText(im, bsxfun(@plus, dets(:, [1, 2]), [19, 0]), scs, 'FontSize', 10, 'BoxOpacity', 0.0, 'TextColor', 'green');
